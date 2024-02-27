@@ -1,22 +1,26 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import './styles.css';
 import { checkEmail, checkPassword } from './validators';
 
 export default function StateForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isAfterFirstSubmit, setIsAfterFirstSubmit] = useState<boolean>(false);
 
-  const [emailErrors, setEmailErrors] = useState<string[]>([]);
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const emailErrors = useMemo(() => {
+    return isAfterFirstSubmit ? checkEmail(email) : [];
+  }, [isAfterFirstSubmit, email]);
+
+  const passwordErrors = useMemo(() => {
+    return isAfterFirstSubmit ? checkPassword(password) : [];
+  }, [isAfterFirstSubmit, password]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsAfterFirstSubmit(true);
 
     const emailResults = checkEmail(email);
     const passwordResults = checkPassword(password);
-
-    setEmailErrors(emailResults);
-    setPasswordErrors(passwordResults);
 
     if (emailResults.length === 0 && passwordResults.length === 0) {
       alert('Form is valid');

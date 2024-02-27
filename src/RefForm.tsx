@@ -8,9 +8,11 @@ export default function RefForm() {
 
   const [emailErrors, setEmailErrors] = useState<string[]>([]);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [isAfterFirstSubmit, setIsAfterFirstSubmit] = useState<boolean>(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsAfterFirstSubmit(true);
 
     const email = emailRef.current?.value || '';
     const password = passwordRef.current?.value || '';
@@ -23,6 +25,18 @@ export default function RefForm() {
 
     if (emailResults.length === 0 && passwordResults.length === 0) {
       alert('Form is valid');
+    }
+  }
+
+  function onEmailChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    if (isAfterFirstSubmit) {
+      setEmailErrors(checkEmail(e.target.value));
+    }
+  }
+
+  function onPasswordChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    if (isAfterFirstSubmit) {
+      setPasswordErrors(checkPassword(e.target.value));
     }
   }
 
@@ -40,6 +54,7 @@ export default function RefForm() {
             className="input"
             name="email"
             defaultValue=""
+            onChange={onEmailChange}
           />
           {emailErrors.length > 0 &&
             emailErrors.map((error, index) => (
@@ -59,6 +74,7 @@ export default function RefForm() {
             className="input"
             name="password"
             defaultValue=""
+            onChange={onPasswordChange}
           />
           {passwordErrors.length > 0 &&
             passwordErrors.map((error, index) => (
